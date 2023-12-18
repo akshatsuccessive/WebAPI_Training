@@ -63,7 +63,7 @@ namespace WebAPITraining.Controllers
             {
                 return BadRequest(student);
             }
-            if (student.Id > 0)
+            if (student.Id < 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -101,7 +101,6 @@ namespace WebAPITraining.Controllers
                 return NotFound(); 
             }
 
-            // Update the existing student's properties
             existingStudent.Name = updatedStudent.Name;
             existingStudent.Age = updatedStudent.Age;
             existingStudent.Department = updatedStudent.Department;
