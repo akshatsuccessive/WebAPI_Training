@@ -25,13 +25,13 @@ namespace WebAPITraining.Controllers
             {
                 return BadRequest();
             }
-            var studnet = College.Students.FirstOrDefault(x => x.Id == id);
-            if (studnet == null)
+            var student = College.Students.FirstOrDefault(x => x.Id == id);
+            if (student == null)
             {
                 return NotFound();
             }
 
-            return Ok(studnet);
+            return Ok(student);
         }
 
         [HttpGet("name:alpha", Name = "GetStudentByName")]
@@ -80,7 +80,7 @@ namespace WebAPITraining.Controllers
         public ActionResult<Student> DeleteStudent(int id)
         {
             var student = College.Students.FirstOrDefault(x => x.Id == id);
-            if(student == null)
+            if (student == null)
             {
                 return NotFound(student);
             }
@@ -98,7 +98,7 @@ namespace WebAPITraining.Controllers
 
             if (existingStudent == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             existingStudent.Name = updatedStudent.Name;
