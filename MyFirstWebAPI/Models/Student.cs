@@ -9,7 +9,7 @@ namespace WebAPITraining.Models
         [ValidateNever]
         public int Id { get; set; }
 
-        [StringLength(25, ErrorMessage = "Name should be less than 25 characters")]
+        //[StringLength(25, ErrorMessage = "Name should be less than 25 characters")]
         public string Name { get; set; }
 
         [Range(18, 60)]

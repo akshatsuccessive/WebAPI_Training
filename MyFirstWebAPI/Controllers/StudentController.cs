@@ -21,7 +21,7 @@ namespace WebAPITraining.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Student> GetStudentList(int id)
         {
-            if (id < 0)
+            if (id <= 0)
             {
                 return BadRequest();
             }
