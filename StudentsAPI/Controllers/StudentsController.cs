@@ -57,5 +57,49 @@ namespace StudentsAPI.Controllers
                 return NotFound("Invalid Student");
             }
         }
+
+
+        // update student
+        [HttpPut]
+        [Route("{id}")]   // by default [Route("{id:int"})]
+        public async Task<IActionResult> UpdateStudent([FromRoute] int id, UpdateStudentRequest updateStudentRequest)
+        {
+            var student = await context.Students.FindAsync(id);
+            long currentPhone = student.Phone;
+
+            if (student != null)
+            {
+                if(updateStudentRequest.Name.Length != 0)
+                {
+                    student.Name = updateStudentRequest.Name;
+                }
+                if(updateStudentRequest.Email.Length != 0)
+                {
+                    student.Email = updateStudentRequest.Email;
+                }
+                if(updateStudentRequest.Course.Length != 0)
+                {
+                    student.Course = updateStudentRequest.Course;
+                }
+
+
+                if (updateStudentRequest.Phone == 0)
+                {
+                    student.Phone = currentPhone;
+                }
+                else
+                {
+                    student.Phone = updateStudentRequest.Phone;
+                }
+
+                await context.SaveChangesAsync();
+
+                return Ok(student);     // returning the response back
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
     }
 }
