@@ -38,5 +38,24 @@ namespace StudentsAPI.Controllers
             // return the request(student is request)
             return Ok(student);
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetStudent([FromRoute] int id)
+        {
+            if(id <= 0)
+            {
+                return BadRequest();
+            }
+            var student = await context.Students.FindAsync(id);
+            if(student != null)
+            {
+                return Ok(student);
+            }
+            else
+            {
+                return NotFound("Invalid Student");
+            }
+        }
     }
 }
