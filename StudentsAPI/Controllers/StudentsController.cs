@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using StudentsAPI.Data;
 using StudentsAPI.Models;
 
@@ -25,7 +26,7 @@ namespace StudentsAPI.Controllers
         {
             var student = new Student()     // this is what goes in database
             {
-                Id = context.Students.ToList().Count + 1,
+                //Id = context.Students.IsNullOrEmpty() ? 1 : context.Students.ToList().Count + 1,
                 Name = addStudentRequest.Name,
                 Email = addStudentRequest.Email,
                 Phone = addStudentRequest.Phone,
@@ -109,7 +110,7 @@ namespace StudentsAPI.Controllers
         public async Task<IActionResult> DeleteStudent([FromRoute] int id)
         {
             var student = await context.Students.FindAsync(id);
-            if (student != null)
+            if(student != null)
             {
                 // delete request
                 context.Remove(student);

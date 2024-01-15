@@ -10,7 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<StudentsAPI_DbContext>(options => options.UseInMemoryDatabase("StudentsAPI_DB")); // StudentsAPI_DB is the name of Database
+//builder.Services.AddDbContext<StudentsAPI_DbContext>(options => options.UseInMemoryDatabase("StudentsAPI_DB")); // StudentsAPI_DB is the name of Database
+builder.Services.AddDbContext<StudentsAPI_DbContext>(options =>
+  options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnectionString")));
 
 var app = builder.Build();
 
