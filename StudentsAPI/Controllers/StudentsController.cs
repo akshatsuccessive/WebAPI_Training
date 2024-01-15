@@ -43,12 +43,12 @@ namespace StudentsAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetStudent([FromRoute] int id)
         {
-            if(id <= 0)
+            if (id <= 0)
             {
                 return BadRequest();
             }
             var student = await context.Students.FindAsync(id);
-            if(student != null)
+            if (student != null)
             {
                 return Ok(student);
             }
@@ -62,22 +62,22 @@ namespace StudentsAPI.Controllers
         // update student
         [HttpPut]
         [Route("{id}")]   // by default [Route("{id:int"})]
-        public async Task<IActionResult> UpdateStudent([FromRoute] int id, UpdateStudentRequest updateStudentRequest)
+        public async Task<IActionResult> UpdateStudent([FromRoute] int id, UpdateStudentRequest updateStudentRequest)  // updateStudentRequest contains the fields which will be given by the user
         {
             var student = await context.Students.FindAsync(id);
             long currentPhone = student.Phone;
 
             if (student != null)
             {
-                if(updateStudentRequest.Name.Length != 0)
+                if (updateStudentRequest.Name.Length != 0)
                 {
                     student.Name = updateStudentRequest.Name;
                 }
-                if(updateStudentRequest.Email.Length != 0)
+                if (updateStudentRequest.Email.Length != 0)
                 {
                     student.Email = updateStudentRequest.Email;
                 }
-                if(updateStudentRequest.Course.Length != 0)
+                if (updateStudentRequest.Course.Length != 0)
                 {
                     student.Course = updateStudentRequest.Course;
                 }
@@ -100,6 +100,23 @@ namespace StudentsAPI.Controllers
             {
                 return NotFound();
             }
+        }
+
+
+        // delete a student
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteStudent([FromRoute] int id)
+        {
+            var student = await context.Students.FindAsync(id);
+            if (student != null)
+            {
+                // delete request
+                context.Remove(student);
+                await context.SaveChangesAsync();
+                return Ok(student);
+            }
+            return NotFound();
         }
     }
 }
