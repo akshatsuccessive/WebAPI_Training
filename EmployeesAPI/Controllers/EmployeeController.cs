@@ -30,12 +30,12 @@ namespace EmployeesAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            if(id <= 0)
+            if (id <= 0)
             {
                 return BadRequest();
             }
             var employee = await context.Employees.FindAsync(id);
-            if(employee == null)
+            if (employee == null)
             {
                 return NotFound();
             }
@@ -65,7 +65,7 @@ namespace EmployeesAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Employee>> AddEmployee([FromBody] Employee employee)
         {
-            if(employee == null)
+            if (employee == null)
             {
                 return BadRequest(employee);
             }
@@ -82,7 +82,7 @@ namespace EmployeesAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] Employee updatedEmployee)
         {
-
+            /*
             var currentEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == id);
 
             int currentSalary = currentEmployee.Salary;
@@ -118,9 +118,9 @@ namespace EmployeesAPI.Controllers
             else
             {
                 return NotFound();
-            }
+            }*/
 
-            /*
+
             var currentEmployee = await context.Employees.FirstOrDefaultAsync(e => e.Id == id);
 
 
@@ -139,7 +139,6 @@ namespace EmployeesAPI.Controllers
             {
                 return NotFound();
             }
-            */
         }
 
         [HttpDelete]
@@ -148,7 +147,7 @@ namespace EmployeesAPI.Controllers
         public async Task<IActionResult> DeleteEmployee([FromRoute] int id)
         {
             var employee = await context.Employees.FindAsync(id);
-            if(employee == null)
+            if (employee == null)
             {
                 return NotFound();
             }
