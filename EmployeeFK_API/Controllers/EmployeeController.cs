@@ -65,5 +65,43 @@ namespace EmployeeFK_API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateEmployee([FromRoute] Guid id, [FromBody] UpdateEmployeeDTO request)
+        {
+            if(request == null)
+            {
+                return BadRequest();
+            }
+            var employee = await context.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);
+            if(employee == null)
+            {
+                return NotFound();
+            }
+            employee.EmployeeId = id;
+            employee.Name = request.Name;
+            employee.Address = request.Address;
+            employee.Age = request.Age;
+            employee.Salary = request.Salary;
+            employee.DepartmentId = request.DepartmentId;
+
+            await context.SaveChangesAsync();
+            return Ok(employee);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEmployee([FromRoute] Guid id)
+        {
+            var employee = await context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            context.Employees.Remove(employee);
+            await context.SaveChangesAsync();
+            return Ok(employee);
+        }
     }
 }
