@@ -1,4 +1,5 @@
 using EmployeeFK_API.Data;
+using EmployeeFK_API.Data.Base;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnectionString")));
+
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 var app = builder.Build();
 

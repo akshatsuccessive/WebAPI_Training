@@ -1,4 +1,5 @@
 ﻿using EmployeeFK_API.Data;
+using EmployeeFK_API.Data.Base;
 using EmployeeFK_API.Models.DomanModels;
 using EmployeeFK_API.Models.DTO;
 using Microsoft.AspNetCore.Http;
@@ -11,23 +12,23 @@ namespace EmployeeFK_API.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly ApplicationDbContext context;
-        public EmployeeController(ApplicationDbContext context)
+        private readonly IEmployeeRepository empRepo;
+        public EmployeeController(IEmployeeRepository empRepo)
         {
-            this.context = context;
+            this.empRepo = empRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
-            var employees = await context.Employees.ToListAsync();
+            var employees = await empRepo.GetAllEmployees();
             return Ok(employees);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById([FromRoute] Guid id)
         {
-            var employee = await context.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);
+            var employee = await empRepo.GetEmployeeById(id);
             if (employee == null)
             {
                 return NotFound();
@@ -40,7 +41,7 @@ namespace EmployeeFK_API.Controllers
         {
             try
             {
-                var employees = await context.Employees.Where(e => e.DepartmentId == departmentId).ToListAsync();
+                var employees = await empRepo.GetEmployeesByDepartment(departmentId);
                 if (employees.Count() == 0)
                 {
                     return NotFound("No Employees Found");
@@ -63,18 +64,7 @@ namespace EmployeeFK_API.Controllers
                     return BadRequest();
                 }
 
-                var newEmployee = new Employee()
-                {
-                    EmployeeId = Guid.NewGuid(),
-                    Name = request.Name,
-                    Address = request.Address,
-                    Age = request.Age,
-                    Salary = request.Salary,
-                    DepartmentId = request.DepartmentId,
-                };
-
-                await context.Employees.AddAsync(newEmployee);
-                await context.SaveChangesAsync();
+                var newEmployee = await empRepo.AddEmployee(request);
                 return CreatedAtAction(nameof(GetEmployeeById), new { id = newEmployee.EmployeeId }, newEmployee);
             }
             catch (Exception ex)
@@ -91,33 +81,22 @@ namespace EmployeeFK_API.Controllers
             {
                 return BadRequest();
             }
-            var employee = await context.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);
-            if (employee == null)
+            var employee = await empRepo.UpdateEmployee(id, request);   
+            if(employee == null)
             {
                 return NotFound();
             }
-            employee.EmployeeId = id;
-            employee.Name = request.Name;
-            employee.Address = request.Address;
-            employee.Age = request.Age;
-            employee.Salary = request.Salary;
-            employee.DepartmentId = request.DepartmentId;
-
-            await context.SaveChangesAsync();
             return Ok(employee);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee([FromRoute] Guid id)
         {
-            var employee = await context.Employees.FindAsync(id);
-            if (employee == null)
+            var employee = await empRepo.DeleteEmployee(id);
+            if(employee == null)
             {
                 return NotFound();
             }
-
-            context.Employees.Remove(employee);
-            await context.SaveChangesAsync();
             return Ok(employee);
         }
     }

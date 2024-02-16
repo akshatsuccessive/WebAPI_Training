@@ -1,4 +1,5 @@
 ﻿using EmployeeFK_API.Data;
+using EmployeeFK_API.Data.Base;
 using EmployeeFK_API.Models.DomanModels;
 using EmployeeFK_API.Models.DTO;
 using Microsoft.AspNetCore.Http;
@@ -11,23 +12,23 @@ namespace EmployeeFK_API.Controllers
     [ApiController]
     public class DepartmentController : ControllerBase
     {
-        private readonly ApplicationDbContext context;
-        public DepartmentController(ApplicationDbContext context)
+        private readonly IDepartmentRepository dept;
+        public DepartmentController(IDepartmentRepository dept)
         {
-            this.context = context;
+            this.dept = dept;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetDepartments()
         {
-            var departments = await context.Departments.ToListAsync();
+            var departments = await dept.GetDepartments();
             return Ok(departments);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDepartmentById([FromRoute] int id)
         {
-            var department = await context.Departments.FindAsync(id);
+            var department = await dept.GetDepartmentById(id);
             if (department == null)
             {
                 return NotFound();
@@ -42,43 +43,51 @@ namespace EmployeeFK_API.Controllers
             {
                 return BadRequest();
             }
-            var newDepartment = new Department()
+            try
             {
-                DepartmentName = request.DepartmentName
-            };
+                var newDepartment = await dept.AddDepartment(request);
 
-            await context.Departments.AddAsync(newDepartment);
-            await context.SaveChangesAsync();
-            //return CreatedAtRoute("GetDepartmentById", new { id = newDepartment.DepartmentId }, newDepartment);
-            return CreatedAtAction(nameof(GetDepartmentById), new { id = newDepartment.DepartmentId }, newDepartment);
+                //return CreatedAtRoute("GetDepartmentById", new { id = newDepartment.DepartmentId }, newDepartment);
+                return CreatedAtAction(nameof(GetDepartmentById), new { id = newDepartment.DepartmentId }, newDepartment);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);  
+            }
         }
-
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDepartment([FromRoute] int id, [FromBody] UpdateDepartmentDTO request)
         {
-            var department = await context.Departments.FirstOrDefaultAsync(d => d.DepartmentId == id);
-            if (department == null)
+            if(request == null)
             {
-                return NotFound();
+                return BadRequest();
             }
+            try
+            {
+                var department = await dept.UpdateDepartment(id, request);
+                if (department == null)
+                {
+                    return NotFound();
+                }
 
-            department.DepartmentName = request.DepartmentName;
-
-            await context.SaveChangesAsync();
-            return Ok(department);
+                return Ok(department);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDepartment([FromRoute] int id)
         {
-            var department = await context.Departments.FirstOrDefaultAsync(d => d.DepartmentId == id);
+            var department = await dept.DeleteDepartment(id);
             if (department == null)
             {
                 return NotFound();
             }
 
-            context.Remove(department);
-            await context.SaveChangesAsync();
             return Ok(department);
         }
     }
