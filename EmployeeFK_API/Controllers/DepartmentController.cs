@@ -25,26 +25,25 @@ namespace EmployeeFK_API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDepartmentById([FromRoute] Guid id)
+        public async Task<IActionResult> GetDepartmentById([FromRoute] int id)
         {
             var department = await context.Departments.FindAsync(id);
-            if(department == null)
+            if (department == null)
             {
                 return NotFound();
             }
             return Ok(department);
         }
 
-        [HttpPost] 
+        [HttpPost]
         public async Task<IActionResult> AddDepartment([FromBody] AddDepartmentDTO request)
-        { 
-            if(request == null)
+        {
+            if (request == null)
             {
                 return BadRequest();
             }
             var newDepartment = new Department()
             {
-                DepartmentId = Guid.NewGuid(),
                 DepartmentName = request.DepartmentName
             };
 
@@ -55,14 +54,14 @@ namespace EmployeeFK_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDepartment([FromRoute] Guid id, [FromBody] UpdateDepartmentDTO request)
+        public async Task<IActionResult> UpdateDepartment([FromRoute] int id, [FromBody] UpdateDepartmentDTO request)
         {
             var department = await context.Departments.FirstOrDefaultAsync(d => d.DepartmentId == id);
-            if(department == null)
+            if (department == null)
             {
                 return NotFound();
             }
-            
+
             department.DepartmentName = request.DepartmentName;
 
             await context.SaveChangesAsync();
@@ -70,7 +69,7 @@ namespace EmployeeFK_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDepartment([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteDepartment([FromRoute] int id)
         {
             var department = await context.Departments.FirstOrDefaultAsync(d => d.DepartmentId == id);
             if (department == null)

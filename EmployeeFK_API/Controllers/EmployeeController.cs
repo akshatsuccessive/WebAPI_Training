@@ -28,13 +28,30 @@ namespace EmployeeFK_API.Controllers
         public async Task<IActionResult> GetEmployeeById([FromRoute] Guid id)
         {
             var employee = await context.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);
-            if(employee == null)
+            if (employee == null)
             {
                 return NotFound();
             }
             return Ok(employee);
         }
 
+        [HttpGet("{departmentId}")]
+        public async Task<IActionResult> GetEmployeesByDepartment([FromRoute] int departmentId)
+        {
+            try
+            {
+                var employees = await context.Employees.Where(e => e.DepartmentId == departmentId).ToListAsync();
+                if (employees.Count() == 0)
+                {
+                    return NotFound("No Employees Found");
+                }
+                return Ok(employees);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddEmployee([FromBody] AddEmployeeDTO request)
@@ -58,9 +75,9 @@ namespace EmployeeFK_API.Controllers
 
                 await context.Employees.AddAsync(newEmployee);
                 await context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetEmployeeById),new { id = newEmployee.EmployeeId }, newEmployee);
+                return CreatedAtAction(nameof(GetEmployeeById), new { id = newEmployee.EmployeeId }, newEmployee);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -70,12 +87,12 @@ namespace EmployeeFK_API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee([FromRoute] Guid id, [FromBody] UpdateEmployeeDTO request)
         {
-            if(request == null)
+            if (request == null)
             {
                 return BadRequest();
             }
             var employee = await context.Employees.FirstOrDefaultAsync(x => x.EmployeeId == id);
-            if(employee == null)
+            if (employee == null)
             {
                 return NotFound();
             }
